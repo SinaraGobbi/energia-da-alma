@@ -6,7 +6,7 @@
 <title>Energia da Alma</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-<meta name="theme-color" content="#5B3FB0">
+<meta name="theme-color" content="#1E1548">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
@@ -23,14 +23,32 @@ label{font-size:14px;font-weight:600;color:var(--soft)}
 .btn:disabled{opacity:.55}
 .btn.ghost{background:transparent;color:var(--violet);border:1px solid var(--mist)}
 .btn.small{padding:8px 16px;font-size:14px}
-#login{min-height:100vh;display:grid;place-items:center;padding:24px;
-  background:repeating-radial-gradient(circle at 50% 30%,transparent 0 34px,rgba(91,63,176,.12) 35px 36px),var(--pearl)}
-#login .box{width:100%;max-width:380px}
-#login h1{font-size:clamp(46px,14vw,68px);color:var(--violet);margin-bottom:10px}
-#login p{color:var(--soft);margin:0 0 26px}
-#login .btn{width:100%}
-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--mist)}
-header strong{font:600 24px 'Cormorant Garamond',serif;color:var(--violet)}
+sup.r{font:600 .36em 'Nunito Sans',sans-serif;margin-left:3px;vertical-align:top;position:relative;top:.55em}
+#login{position:relative;min-height:100vh;display:grid;place-items:center;padding:28px 22px;overflow:hidden;color:#FBF3E0;
+  background:radial-gradient(ellipse at 50% 24%,rgba(242,201,122,.30),transparent 58%),linear-gradient(180deg,#140E36 0%,#2B2070 52%,#5A3C95 100%)}
+#login::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.8;
+  background:radial-gradient(1.5px 1.5px at 12% 14%,#fff,transparent),radial-gradient(1px 1px at 82% 10%,#fff,transparent),radial-gradient(1.5px 1.5px at 70% 32%,#F6E3B0,transparent),
+  radial-gradient(1px 1px at 20% 44%,#fff,transparent),radial-gradient(1px 1px at 90% 58%,#fff,transparent),radial-gradient(1.5px 1.5px at 8% 72%,#F6E3B0,transparent),radial-gradient(1px 1px at 55% 88%,#fff,transparent)}
+#login .box{position:relative;width:100%;max-width:400px;text-align:center}
+.aura{position:relative;width:min(64vw,270px);aspect-ratio:1;margin:0 auto 6px}
+.aura i{position:absolute;inset:0;border-radius:50%;border:1px solid rgba(242,201,122,.5);animation:ring 8s ease-out infinite}
+.aura i:nth-child(2){animation-delay:2s}.aura i:nth-child(3){animation-delay:4s}.aura i:nth-child(4){animation-delay:6s}
+.aura b{position:absolute;inset:37%;border-radius:50%;background:radial-gradient(circle,#FFF6DC 0,#F2C97A 38%,rgba(242,201,122,0) 72%);box-shadow:0 0 90px 34px rgba(242,201,122,.38);animation:breath 5s ease-in-out infinite}
+@keyframes ring{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.3);opacity:0}}
+@keyframes breath{50%{transform:scale(1.14)}}
+@media (prefers-reduced-motion:reduce){.aura i,.aura b{animation:none}.aura i:nth-child(1){transform:scale(.45)}.aura i:nth-child(2){transform:scale(.7)}.aura i:nth-child(3){transform:scale(.95)}.aura i:nth-child(4){opacity:0}}
+#login h1{font-size:clamp(46px,14vw,66px);font-weight:500;letter-spacing:.02em;color:#FBF3E0;margin:0 0 10px;text-shadow:0 0 30px rgba(242,201,122,.35)}
+#login .lema{color:rgba(251,243,224,.78);font-size:17px;margin:0 0 28px;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:22px}
+#login .card{text-align:left;background:rgba(255,255,255,.07);border:1px solid rgba(242,201,122,.28);border-radius:20px;padding:22px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+#login label{color:rgba(251,243,224,.82)}
+#login input{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2);color:#fff}
+#login input:focus{outline-color:#F2C97A}
+#login input:-webkit-autofill{-webkit-text-fill-color:#fff;box-shadow:0 0 0 100px #3A2C80 inset}
+#login .msg.err{color:#FFB4C0}
+#login .btn{width:100%;background:linear-gradient(135deg,#F6D68A,#D9A74A);color:#2A1C57;font-size:17px;box-shadow:0 8px 30px rgba(217,167,74,.35)}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:linear-gradient(90deg,#1E1548,#3A2B80)}
+header strong{font:600 24px 'Cormorant Garamond',serif;color:#F6E3B0}
+header .btn.ghost{color:#F6E3B0;border-color:rgba(246,227,176,.35)}
 header nav{display:flex;gap:8px}
 main{max-width:720px;margin:0 auto;padding:28px 20px 80px}
 main>h2{font-size:38px;margin-bottom:6px}
@@ -55,19 +73,22 @@ audio{width:100%}
 </head>
 <body>
 
-<section id="login" class="hide">
-  <form class="box" id="fLogin">
-    <h1>Energia da Alma</h1>
-    <p>Entre com o e-mail e a senha que você recebeu.</p>
-    <label for="em">E-mail</label><input id="em" type="email" autocomplete="username" required>
-    <label for="pw">Senha</label><input id="pw" type="password" autocomplete="current-password" required>
-    <div class="msg err" id="loginErr"></div>
-    <button class="btn" id="btnEntrar">Entrar</button>
-  </form>
+<section id="login">
+  <div class="box">
+    <div class="aura" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></div>
+    <h1>Energia da Alma<sup class="r">®</sup></h1>
+    <p class="lema">Seu espaço sagrado de reconexão.</p>
+    <form class="card" id="fLogin">
+      <label for="em">E-mail</label><input id="em" type="email" autocomplete="username" required>
+      <label for="pw">Senha</label><input id="pw" type="password" autocomplete="current-password" required>
+      <div class="msg err" id="loginErr"></div>
+      <button class="btn" id="btnEntrar">Entrar</button>
+    </form>
+  </div>
 </section>
 
 <section id="app" class="hide">
-  <header><strong>Energia da Alma</strong>
+  <header><strong>Energia da Alma<sup class="r">®</sup></strong>
     <nav><button class="btn ghost small hide" id="btnPainel">Painel</button><button class="btn ghost small" id="btnSair">Sair</button></nav>
   </header>
   <main id="view"></main>
@@ -75,11 +96,15 @@ audio{width:100%}
 
 <script>
 /* ====== COLE AQUI OS SEUS DADOS ====== */
-const SUPABASE_URL = 'lrklvaerwjifcnhftrlv';
+const SUPABASE_URL = 'https://lrklvaerwjifcnhftrlv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxya2x2YWVyd2ppZmNuaGZ0cmx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMTkxMzAsImV4cCI6MjEwODg5NTEzMH0.dcINxr2m4Iw8GzRU5pcXZMvmHdm6rZlO5iUFex8lPTE';
 const WHATSAPP = '5571993138074'; // seu número com 55 + DDD
 /* ===================================== */
 
+const aviso = t => document.body.insertAdjacentHTML('afterbegin', '<p style="padding:16px 20px;margin:0;font-weight:700;color:#fff;background:#A3405A">' + t + '</p>');
+window.addEventListener('error', e => aviso('Erro: ' + e.message));
+if (SUPABASE_URL.includes('COLE_AQUI') || SUPABASE_KEY.includes('COLE_AQUI')) { aviso('Falta preencher a Project URL e a anon key no arquivo index.html.'); throw new Error('config'); }
+if (typeof supabase === 'undefined') { aviso('Não foi possível carregar o sistema de login. Verifique a internet e recarregue.'); throw new Error('cdn'); }
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
