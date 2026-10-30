@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Energia da Alma</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#5B3FB0">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<style>
+:root{--pearl:#F1EEF9;--ink:#251C47;--violet:#5B3FB0;--gold:#B98A2E;--mist:#DDD6F1;--soft:#6F668F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pearl);color:var(--ink);font:400 16px/1.55 'Nunito Sans',system-ui,sans-serif;min-height:100vh}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:600;line-height:1.1;margin:0}
+.hide{display:none!important}
+button,input,select{font:inherit;color:inherit}
+input,select{width:100%;padding:13px 14px;border:1px solid var(--mist);border-radius:10px;background:#fff;margin:6px 0 14px}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--violet);outline-offset:1px}
+label{font-size:14px;font-weight:600;color:var(--soft)}
+.btn{background:var(--violet);color:#fff;border:0;border-radius:999px;padding:13px 26px;font-weight:700;cursor:pointer}
+.btn:disabled{opacity:.55}
+.btn.ghost{background:transparent;color:var(--violet);border:1px solid var(--mist)}
+.btn.small{padding:8px 16px;font-size:14px}
+#login{min-height:100vh;display:grid;place-items:center;padding:24px;
+  background:repeating-radial-gradient(circle at 50% 30%,transparent 0 34px,rgba(91,63,176,.12) 35px 36px),var(--pearl)}
+#login .box{width:100%;max-width:380px}
+#login h1{font-size:clamp(46px,14vw,68px);color:var(--violet);margin-bottom:10px}
+#login p{color:var(--soft);margin:0 0 26px}
+#login .btn{width:100%}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--mist)}
+header strong{font:600 24px 'Cormorant Garamond',serif;color:var(--violet)}
+header nav{display:flex;gap:8px}
+main{max-width:720px;margin:0 auto;padding:28px 20px 80px}
+main>h2{font-size:38px;margin-bottom:6px}
+.sub{color:var(--soft);margin:0 0 26px}
+.row{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--mist);padding:22px 0;cursor:pointer}
+.row h3{font-size:30px;color:var(--ink)}
+.row .tag{font-size:14px;color:var(--gold);font-weight:700}
+.row.off h3{color:var(--soft)}
+.row.off .tag{color:#A3405A}
+.item{padding:20px 0;border-bottom:1px solid var(--mist)}
+.item h3{font-size:24px;margin-bottom:10px}
+audio{width:100%}
+.video{position:relative;padding-top:56.25%;border-radius:12px;overflow:hidden;background:#000}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.panel{background:#fff;border-radius:16px;padding:20px;margin-bottom:22px;border:1px solid var(--mist)}
+.panel h3{font-size:26px;margin-bottom:14px}
+.msg{font-weight:600;margin:0 0 12px}.msg.err{color:#A3405A}.msg.ok{color:#2E7D5B}
+.aluno{padding:12px 0;border-bottom:1px solid var(--mist);font-size:15px}
+.aluno small{display:block;color:var(--soft)}
+.back{background:none;border:0;color:var(--violet);font-weight:700;cursor:pointer;padding:0;margin-bottom:18px}
+</style>
+</head>
+<body>
+
+<section id="login" class="hide">
+  <form class="box" id="fLogin">
+    <h1>Energia da Alma</h1>
+    <p>Entre com o e-mail e a senha que você recebeu.</p>
+    <label for="em">E-mail</label><input id="em" type="email" autocomplete="username" required>
+    <label for="pw">Senha</label><input id="pw" type="password" autocomplete="current-password" required>
+    <div class="msg err" id="loginErr"></div>
+    <button class="btn" id="btnEntrar">Entrar</button>
+  </form>
+</section>
+
+<section id="app" class="hide">
+  <header><strong>Energia da Alma</strong>
+    <nav><button class="btn ghost small hide" id="btnPainel">Painel</button><button class="btn ghost small" id="btnSair">Sair</button></nav>
+  </header>
+  <main id="view"></main>
+</section>
+
+<script>
+/* ====== COLE AQUI OS SEUS DADOS ====== */
+const SUPABASE_URL = 'lrklvaerwjifcnhftrlv';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxya2x2YWVyd2ppZmNuaGZ0cmx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMTkxMzAsImV4cCI6MjEwODg5NTEzMH0.dcINxr2m4Iw8GzRU5pcXZMvmHdm6rZlO5iUFex8lPTE';
+const WHATSAPP = '5571993138074'; // seu número com 55 + DDD
+/* ===================================== */
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = d => new Date(d).toLocaleDateString('pt-BR');
+let isAdmin = false;
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+
+async function api(body) {
+  const { data: { session } } = await sb.auth.getSession();
+  const r = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token }, body: JSON.stringify(body) });
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.erro || 'Erro');
+  return j;
+}
+
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  session ? start() : showLogin();
+}
+function showLogin() { $('#app').classList.add('hide'); $('#login').classList.remove('hide'); }
+
+$('#fLogin').addEventListener('submit', async e => {
+  e.preventDefault(); $('#loginErr').textContent = ''; $('#btnEntrar').disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email: $('#em').value.trim(), password: $('#pw').value });
+  $('#btnEntrar').disabled = false;
+  if (error) { $('#loginErr').textContent = 'E-mail ou senha incorretos.'; return; }
+  start();
+});
+$('#btnSair').onclick = async () => { await sb.auth.signOut(); $('#pw').value = ''; showLogin(); };
+$('#btnPainel').onclick = renderPainel;
+
+async function start() {
+  $('#login').classList.add('hide'); $('#app').classList.remove('hide');
+  const { data } = await sb.from('admins').select('user_id').maybeSingle();
+  isAdmin = !!data; $('#btnPainel').classList.toggle('hide', !isAdmin);
+  renderHome();
+}
+
+async function renderHome() {
+  const v = $('#view'); v.innerHTML = '<p class="sub">Carregando...</p>';
+  const { data, error } = await sb.from('acessos').select('plano,expira_em,produtos(id,nome,descricao)').order('expira_em', { ascending: false });
+  if (error) { v.innerHTML = '<p class="msg err">Não foi possível carregar. Tente de novo.</p>'; return; }
+  let h = '<h2>Seus conteúdos</h2><p class="sub">Escolha por onde começar.</p>';
+  if (!data.length) h += '<p>Você ainda não tem nenhum conteúdo liberado. Fale com a Energia da Alma pelo WhatsApp.</p>';
+  data.forEach(a => {
+    const ativo = new Date(a.expira_em) > new Date();
+    const dias = Math.ceil((new Date(a.expira_em) - new Date()) / 864e5);
+    h += `<button class="row ${ativo ? '' : 'off'}" data-id="${a.produtos.id}" data-ativo="${ativo}" data-nome="${esc(a.produtos.nome)}">
+      <h3>${esc(a.produtos.nome)}</h3>
+      <div class="tag">${ativo ? `Acesso até ${fmt(a.expira_em)} (${dias} ${dias === 1 ? 'dia' : 'dias'})` : `Acesso encerrado em ${fmt(a.expira_em)}`}</div></button>`;
+  });
+  v.innerHTML = h;
+  v.querySelectorAll('.row').forEach(b => b.onclick = () => b.dataset.ativo === 'true' ? renderProduto(b.dataset.id, b.dataset.nome) : renderExpirado(b.dataset.nome));
+}
+
+function renderExpirado(nome) {
+  const msg = encodeURIComponent(`Olá! Quero renovar meu acesso a ${nome}.`);
+  $('#view').innerHTML = `<button class="back" id="vlt">Voltar</button><h2>Seu acesso terminou</h2>
+    <p class="sub">Para continuar com ${esc(nome)}, renove seu plano.</p>
+    <a class="btn" style="display:inline-block;text-decoration:none" href="https://wa.me/${WHATSAPP}?text=${msg}">Renovar pelo WhatsApp</a>`;
+  $('#vlt').onclick = renderHome;
+}
+
+function ytId(u) { const m = String(u).match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : u; }
+
+async function renderProduto(id, nome) {
+  const v = $('#view'); v.innerHTML = '<p class="sub">Carregando...</p>';
+  const { data, error } = await sb.from('conteudos').select('*').eq('produto_id', id).order('ordem').order('criado_em');
+  if (error) { v.innerHTML = '<p class="msg err">Não foi possível carregar.</p>'; return; }
+  let h = `<button class="back" id="vlt">Voltar</button><h2>${esc(nome)}</h2><p class="sub"></p>`;
+  if (!data.length) h += '<p>Os conteúdos serão publicados aqui em breve.</p>';
+  for (const c of data) {
+    h += `<div class="item"><h3>${esc(c.titulo)}</h3>`;
+    if (c.tipo === 'video') h += `<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${esc(ytId(c.url))}?rel=0" allowfullscreen loading="lazy"></iframe></div>`;
+    else {
+      const { data: s } = await sb.storage.from('audios').createSignedUrl(c.url, 7200);
+      h += s ? `<audio controls controlsList="nodownload" preload="none" src="${esc(s.signedUrl)}"></audio>` : '<p class="msg err">Áudio indisponível.</p>';
+    }
+    h += '</div>';
+  }
+  v.innerHTML = h; $('#vlt').onclick = renderHome;
+}
+
+async function renderPainel() {
+  const v = $('#view'); v.innerHTML = '<p class="sub">Carregando...</p>';
+  const { data: prods } = await sb.from('produtos').select('id,nome').order('criado_em');
+  const opt = (prods || []).map(p => `<option value="${p.id}">${esc(p.nome)}</option>`).join('');
+  v.innerHTML = `<button class="back" id="vlt">Voltar aos conteúdos</button><h2>Painel</h2><p class="sub">Só você vê esta área.</p>
+  <div class="panel"><h3>Liberar acesso</h3>
+    <label>E-mail do aluno</label><input id="a_em" type="email">
+    <label>Senha (só para aluno novo)</label><input id="a_pw" type="text" placeholder="mínimo 6 caracteres">
+    <label>Produto</label><select id="a_pr">${opt}</select>
+    <label>Plano</label><select id="a_pl"><option value="mensal">Mensal (1 mês)</option><option value="semestral">Semestral (6 meses)</option></select>
+    <div class="msg" id="a_msg"></div><button class="btn" id="a_go">Liberar acesso</button>
+    <p class="sub" style="margin:12px 0 0;font-size:14px">Para renovar, repita o e-mail e o plano: os dias novos somam aos que sobraram.</p></div>
+  <div class="panel"><h3>Adicionar conteúdo</h3>
+    <label>Produto</label><select id="c_pr">${opt}</select>
+    <label>Título</label><input id="c_ti">
+    <label>Tipo</label><select id="c_tp"><option value="audio">Áudio (arquivo MP3)</option><option value="video">Vídeo (link do YouTube)</option></select>
+    <div id="c_aud"><label>Arquivo de áudio (até 50 MB)</label><input id="c_fi" type="file" accept="audio/*"></div>
+    <div id="c_vid" class="hide"><label>Link do vídeo no YouTube</label><input id="c_ur" placeholder="https://youtu.be/..."></div>
+    <label>Ordem (1, 2, 3...)</label><input id="c_or" type="number" value="1">
+    <div class="msg" id="c_msg"></div><button class="btn" id="c_go">Adicionar conteúdo</button></div>
+  <div class="panel"><h3>Alunos</h3><div id="lista">Carregando...</div></div>`;
+  $('#vlt').onclick = renderHome;
+  $('#c_tp').onchange = e => { $('#c_aud').classList.toggle('hide', e.target.value !== 'audio'); $('#c_vid').classList.toggle('hide', e.target.value !== 'video'); };
+
+  $('#a_go').onclick = async () => {
+    const m = $('#a_msg'); m.className = 'msg'; m.textContent = 'Liberando...';
+    try {
+      const r = await api({ acao: 'liberar', email: $('#a_em').value, senha: $('#a_pw').value, produto_id: $('#a_pr').value, plano: $('#a_pl').value });
+      m.className = 'msg ok'; m.textContent = 'Acesso liberado até ' + fmt(r.expira_em) + '.'; $('#a_pw').value = ''; carregarAlunos();
+    } catch (e) { m.className = 'msg err'; m.textContent = e.message; }
+  };
+
+  $('#c_go').onclick = async () => {
+    const m = $('#c_msg'), tipo = $('#c_tp').value; m.className = 'msg'; m.textContent = 'Enviando...';
+    try {
+      let url = $('#c_ur').value.trim();
+      if (!$('#c_ti').value.trim()) throw new Error('Escreva o título.');
+      if (tipo === 'audio') {
+        const f = $('#c_fi').files[0]; if (!f) throw new Error('Escolha o arquivo de áudio.');
+        url = Date.now() + '-' + f.name.replace(/[^\w.-]/g, '_');
+        const { error } = await sb.storage.from('audios').upload(url, f); if (error) throw error;
+      } else if (!url) throw new Error('Cole o link do vídeo.');
+      const { error } = await sb.from('conteudos').insert({ produto_id: $('#c_pr').value, titulo: $('#c_ti').value.trim(), tipo, url, ordem: +$('#c_or').value || 0 });
+      if (error) throw error;
+      m.className = 'msg ok'; m.textContent = 'Conteúdo adicionado.'; $('#c_ti').value = ''; $('#c_fi').value = ''; $('#c_ur').value = ''; $('#c_or').value = (+$('#c_or').value || 0) + 1;
+    } catch (e) { m.className = 'msg err'; m.textContent = e.message; }
+  };
+  carregarAlunos();
+}
+
+async function carregarAlunos() {
+  const box = $('#lista');
+  try {
+    const { alunos } = await api({ acao: 'listar' });
+    box.innerHTML = alunos.map(a => `<div class="aluno"><strong>${esc(a.email)}</strong>${a.acessos.map(x => {
+      const ok = new Date(x.expira_em) > new Date();
+      return `<small>${esc(x.produtos?.nome)}, ${x.plano}: ${ok ? 'ativo até ' : 'encerrou em '}${fmt(x.expira_em)} ${ok ? `<a href="#" data-rev="${x.id}">encerrar agora</a>` : ''}</small>`;
+    }).join('') || '<small>Sem acesso liberado</small>'}</div>`).join('') || 'Nenhum aluno ainda.';
+    box.querySelectorAll('[data-rev]').forEach(l => l.onclick = async e => { e.preventDefault(); if (confirm('Encerrar o acesso agora?')) { await api({ acao: 'revogar', acesso_id: l.dataset.rev }); carregarAlunos(); } });
+  } catch (e) { box.innerHTML = `<p class="msg err">${esc(e.message)}</p>`; }
+}
+
+init();
+</script>
+</body>
+</html>
